@@ -33,7 +33,9 @@ flowchart TD
   A -->|Inbound Email Event| B
   B -->|Fetch Email Message| A
   A -->|Convert Email| C
-  C --> D
+  C --> G
+  G --> X
+  X --> D
   D --> E
 
 ```
