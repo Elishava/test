@@ -1,13 +1,13 @@
 # Genesys Embeddable Framework → Dynamics 365 Email Integration
 
-This document describes the data flow and core architecture of the integration between Genesys Cloud's Embeddable Framework and Microsoft Dynamics 365. The integration is implemented using an iframe inside Dynamics and uses an AWS Lambda proxy for secure email attachment retrieval.
+This document describes the data flow and core architecture of the integration between Genesys Cloud's Embeddable Framework and Microsoft Dynamics 365. The integration is implemented using an iframe inside Dynamics.
 
 ## Overview
 
 - **Genesys Embeddable Framework** is embedded into **Dynamics 365** as an iframe.
 - When a new **email interaction** arrives in Genesys, it triggers the data flow.
 - The email and its metadata (participants, subject, body, etc.) are transferred to **Dynamics CRM**.
-- Email attachments are downloaded through a secure **AWS Lambda proxy**, base64 encoded, and added to the Dynamics email record.
+- Email attachments are downloaded, base64 encoded, and added to the Dynamics email record.
 - Upon successful creation, the email form is opened in Dynamics UI.
 
 ## Data Flow Diagram
@@ -24,12 +24,10 @@ flowchart TD
 
   subgraph Dynamics 365
     C["Сreate new incoming email"]
+    G["Get Attachments content]
+    X["Base64 encoded file"]
     D["Update email with content data"]
     E["Open created email"]
-  end
-
-  subgraph AWS Proxy
-    F["AWS Lambda Proxy Function"]
   end
 
   A -->|Inbound Email Event| B
@@ -37,9 +35,6 @@ flowchart TD
   A -->|Convert Email| C
   C --> D
   D --> E
-  A -->|Get Attachments content| F
-  F -->|Base64 encoded file| A
-  A -->|Attach to email| C
 
 ```
 
@@ -67,7 +62,6 @@ flowchart TD
 
 ### 5. Attachment Handling
 
-  - If the email contains attachments, the Genesys content URI is sent to a FedRAMP-compliant **AWS Lambda** proxy.
   - This proxy securely fetches and base64-encodes the attachments without any external exposure.
   - Attachments are returned directly to the embedded client and then passed to Dynamics.
 
@@ -86,21 +80,32 @@ flowchart TD
 * No logging of file content or metadata.
 * No access to external third-party services.
 * Pure function: accepts URL, returns base64 blob.
-* **Always operates inside FedRAMP environment.**
+* 📍 **Always operates inside FedRAMP environment.**
 
 ---
 
-##  Security & Isolation Highlights
+##  FedRAMP Assurance Summary
 
-*  **No outbound traffic to non-FedRAMP environments**.
-*  Genesys and Dynamics integration is entirely **browser-contained** and operates within two FedRAMP-cleared environments.
-*  AWS proxy is used strictly for secure file delivery via base64 — no analytics, storage, or external API usage.
-*  All code respects FedRAMP logging and data handling practices (no unauthorized persistence or leakage).
-*  **No dynamic script loading from external or third-party domains** — all resources are embedded and static.
+| Component                         | FedRAMP-Approved? | Notes                                                              |
+| --------------------------------- | ----------------- | ------------------------------------------------------------------ |
+| **Genesys Embedable Framework** | ✅                 | Hosted and accessed via FedRAMP-authorized endpoints               |
+| **Microsoft Dynamics 365**    | ✅                 | Dynamics instance runs in U.S. Government cloud (GCC)              |
+| **Communication over HTTPS**      | ✅                 | No plaintext transmission; all services use secure TLS connections |
+| **No Third-Party Calls**          | ✅                 | All code paths stay inside the authorized environment              |
+| **No Persistent Storage**         | ✅                 | The proxy returns binary responses; no logging or external storage |
 
 ---
 
-## ❌ What’s *Not* Happening (FedRAMP Boundaries Maintained)
+## Security & Isolation Highlights
+
+* **No outbound traffic to non-FedRAMP environments**.
+* Genesys and Dynamics integration is entirely **browser-contained** and operates within two FedRAMP-cleared environments.
+* All code respects FedRAMP logging and data handling practices (no unauthorized persistence or leakage).
+* **No dynamic script loading from external or third-party domains** — all resources are embedded and static.
+
+---
+
+## What’s *Not* Happening (FedRAMP Boundaries Maintained)
 
 * No request goes to public APIs or CDN services outside FedRAMP.
 * No storage of emails or attachments in intermediate locations.
@@ -118,7 +123,6 @@ flowchart TD
 
 - **Genesys Embeddable Framework (PureCloud API)**
 - **Microsoft Dynamics 365 CRM JavaScript API (CIFramework)**
-- **AWS Lambda (Node.js Proxy Function)**
 
 ---
 
