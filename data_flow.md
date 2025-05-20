@@ -81,35 +81,22 @@ flowchart TD
   - The entire flow includes robust error detection.
   - If any stage fails (e.g., file fetch or record update), fallback logic is triggered to inform the user and prevent data loss.
      
-## ✅ FedRAMP compliance focus:
+## FedRAMP compliance focus:
 
 * No logging of file content or metadata.
 * No access to external third-party services.
 * Pure function: accepts URL, returns base64 blob.
-* 📍 **Always operates inside FedRAMP environment.**
+* **Always operates inside FedRAMP environment.**
 
 ---
 
-##  FedRAMP Assurance Summary
+##  Security & Isolation Highlights
 
-| Component                         | FedRAMP-Approved? | Notes                                                              |
-| --------------------------------- | ----------------- | ------------------------------------------------------------------ |
-| **Genesys Embedable Framework** | ✅                 | Hosted and accessed via FedRAMP-authorized endpoints               |
-| **Microsoft Dynamics 365**    | ✅                 | Dynamics instance runs in U.S. Government cloud (GCC)              |
-| **AWS Lambda**         | ✅                 | Custom proxy runs exclusively in AWS GovCloud with limited scope   |
-| **Communication over HTTPS**      | ✅                 | No plaintext transmission; all services use secure TLS connections |
-| **No Third-Party Calls**          | ✅                 | All code paths stay inside the authorized environment              |
-| **No Persistent Storage**         | ✅                 | The proxy returns binary responses; no logging or external storage |
-
----
-
-## 🔐 Security & Isolation Highlights
-
-* 🔐 **No outbound traffic to non-FedRAMP environments**.
-* 🧩 Genesys and Dynamics integration is entirely **browser-contained** and operates within two FedRAMP-cleared environments.
-* 🛡️ AWS proxy is used strictly for secure file delivery via base64 — no analytics, storage, or external API usage.
-* 📜 All code respects FedRAMP logging and data handling practices (no unauthorized persistence or leakage).
-* 🚫 **No dynamic script loading from external or third-party domains** — all resources are embedded and static.
+*  **No outbound traffic to non-FedRAMP environments**.
+*  Genesys and Dynamics integration is entirely **browser-contained** and operates within two FedRAMP-cleared environments.
+*  AWS proxy is used strictly for secure file delivery via base64 — no analytics, storage, or external API usage.
+*  All code respects FedRAMP logging and data handling practices (no unauthorized persistence or leakage).
+*  **No dynamic script loading from external or third-party domains** — all resources are embedded and static.
 
 ---
 
