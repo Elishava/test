@@ -24,7 +24,7 @@ flowchart TD
 
   subgraph Dynamics 365
     C["Сreate new incoming email"]
-    G["Get Attachments content]
+    G["Get Attachments content"]
     X["Base64 encoded file"]
     D["Update email with content data"]
     E["Open created email"]
