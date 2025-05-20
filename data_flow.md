@@ -82,7 +82,7 @@ flowchart TD
 * No logging of file content or metadata.
 * No access to external third-party services.
 * Pure function: accepts URL, returns base64 blob.
-* 📍 **Always operates inside FedRAMP environment.**
+* **Always operates inside FedRAMP environment.**
 
 ---
 
