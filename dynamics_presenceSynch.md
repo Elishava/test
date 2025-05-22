@@ -36,22 +36,8 @@ document.body.appendChild(iframe);
 | `localStorage` в iframe UI  | ✅               | ✅                             | ✅         |
 | `navigateTo + sharedVar`    | ✅               | ✅                             | ✅\*       |
 
-### 🔹 Пример 1: чтение из параметров URL
 
-```ts
-Microsoft.CIFramework.getEnvironment().then((env) => {
-  const region = env["region"];
-  const clientId = env["clientId"];
-});
-```
-
-Параметры передаются в URL:
-
-```
-https://apps.usw2.pure.cloud/crm/index.html?region=prod-euw1&clientId=abc123
-```
-
-### 🔹 Пример 2: сохранение в сессии
+### 🔹 Пример 1: сохранение в сессии
 
 ```ts
 Microsoft.CIFramework.setSession("genesys_settings", JSON.stringify({
