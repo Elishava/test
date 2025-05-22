@@ -1,4 +1,15 @@
-# 📘 Интеграция Genesys Cloud Embeddable Framework с Dynamics 365 (v1) через iframe
+![image](https://github.com/user-attachments/assets/20fd5cc3-ecb0-45c8-b623-07f27e409468)# 📘 Интеграция Genesys Cloud Embeddable Framework с Dynamics 365 (v1) через iframe
+
+## 🧭 Цель документа
+
+Создание полноценного сценария, при котором:
+
+* Genesys Cloud встраивается в Dynamics 365 через iframe
+* Настройки интеграции управляются через UI, встроенный в iframe (без участия пользователя D365)
+* Происходит синхронизация статусов агентов между Genesys и Dynamics 365
+* Все основано на `CIFramework` (v1 API), без использования `Xrm.WebApi`
+
+---
 
 ## 🔷 1. Встраивание кастомного интерфейса в Dynamics через iframe
 
@@ -27,6 +38,8 @@ document.body.appendChild(iframe);
 
 ## 🔷 2. Хранение настроек (region, clientId, statusMapping и т.д.)
 
+### 📌 Требование: не использовать `Xrm.WebApi`, только `CIFramework`
+
 ### ✅ Варианты хранения
 
 | Метод                       | Персистентность | Использует только CIFramework | Подходит? |
@@ -36,8 +49,22 @@ document.body.appendChild(iframe);
 | `localStorage` в iframe UI  | ✅               | ✅                             | ✅         |
 | `navigateTo + sharedVar`    | ✅               | ✅                             | ✅\*       |
 
+### 🔹 Пример 1: чтение из параметров URL
 
-### 🔹 Пример 1: сохранение в сессии
+```ts
+Microsoft.CIFramework.getEnvironment().then((env) => {
+  const region = env["region"];
+  const clientId = env["clientId"];
+});
+```
+
+Параметры передаются в URL:
+
+```
+https://apps.usw2.pure.cloud/crm/index.html?region=prod-euw1&clientId=abc123
+```
+
+### 🔹 Пример 2: сохранение в сессии
 
 ```ts
 Microsoft.CIFramework.setSession("genesys_settings", JSON.stringify({
@@ -50,36 +77,67 @@ Microsoft.CIFramework.getSession("genesys_settings").then((value) => {
 });
 ```
 
-### 🔹 Пример 2: использование `localStorage` в iframe
+### 🔹 Пример 3: использование `localStorage` в iframe
 
 ```ts
+// Внутри settings.html
 localStorage.setItem("genesys_settings", JSON.stringify({ region: "prod", clientId: "123" }));
 const settings = JSON.parse(localStorage.getItem("genesys_settings") || "{}");
 ```
 
 ---
 
-## 🔷 3. Синхронизация статусов агентов
+## 🔷 3. Синхронизация и изменение статуса агента в Dynamics 365
 
-### ✅ Получение и установка статуса в **Genesys**
+### ✅ Цель:
 
-Работает через Genesys Cloud SDK или Embeddable Framework Events.
+* Считывать и изменять статус агента из внешнего интерфейса
+* Использовать стандартные и кастомные статусы
 
-### ❌ Прямая установка статуса в Dynamics **невозможна** через `CIFramework`
+### 📌 Возможности изменения статуса
 
-### 🧩 Как это реализовать:
+Dynamics 365 использует систему Omni-Channel, в которой статусы управляются через сущности `msdyn_presence` и нестандартное действие `CCaaS_ModifyAgentPresence`.
 
-#### Чтобы статус отразился в Dynamics:
+### 🔹 Вариант 1: Изменение статуса через Web API
 
-   * **нельзя напрямую менять статус Omni-Channel агента** через JS или API
-   * нужно использовать **Power Automate Flow**, который по webhook может вызывать внутреннюю команду
-   * или Plugin в Dynamics, который выполнит нужное действие от имени пользователя
+```http
+POST https://<your_org>.crm.dynamics.com/api/data/v9.0/CCaaS_ModifyAgentPresence
+Content-Type: application/json
+Authorization: Bearer <access_token>
 
-### ⚠️ Примерной архитектуры:
-
-```text
-Genesys SDK <---> iframe UI <---> CIFramework <--> HTTP-запрос --> Flow/Plugin --> Смена статуса в Dynamics
+{
+  "AgentId": "<agent_guid>",
+  "PresenceId": "<presence_guid>"
+}
 ```
+
+### 🔹 Вариант 2: Использование Power Automate Flow
+
+* Создать поток с триггером (например, HTTP-запрос)
+* Добавить шаг **Perform an unbound action** с названием `CCaaS_ModifyAgentPresence`
+* Передать параметры `AgentId` и `PresenceId`
+
+### 🔹 Получение всех возможных статусов
+
+```http
+GET https://<your_org>.crm.dynamics.com/api/data/v9.0/msdyn_presences?$select=msdyn_presenceid,msdyn_name
+```
+
+### 🔹 Получение статуса конкретного агента
+
+```http
+GET https://<your_org>.crm.dynamics.com/api/data/v9.0/systemusers(<agent_guid>)?$expand=msdyn_userpresence($select=msdyn_presenceid,msdyn_name)
+```
+
+### 🔹 Создание кастомных статусов
+
+1. Перейти в **Omnichannel Admin Center** → **Agent Experience** → **Presence**
+2. Добавить новый статус с нужными параметрами
+3. Назначить статус в нужные **Presence profiles**
+
+**Важно:** кастомные статусы появятся в `msdyn_presence`, и будут доступны по API аналогично стандартным.
+
+![image](https://github.com/user-attachments/assets/bc5cecce-29c1-4621-946b-3e63d264d387)
 
 ---
 
@@ -105,16 +163,16 @@ Genesys SDK <---> iframe UI <---> CIFramework <--> HTTP-запрос --> Flow/Pl
 <html>
   <head><title>Genesys Settings</title></head>
   <body>
-    <h2>Genesys Integration Settings</h2>
+    <h2>Настройки Genesys Интеграции</h2>
     <form>
       <label>Регион: <input type="text" id="region" /></label><br />
       <label>Client ID: <input type="text" id="clientId" /></label><br />
-      <label>Status Mapping:</label>
+      <label>Сопоставление статусов:</label>
       <table>
         <tr><th>Genesys</th><th>Dynamics</th></tr>
         <tr><td><input value="Available" /></td><td><input value="Ready" /></td></tr>
       </table>
-      <button type="submit">Save</button>
+      <button type="submit">Сохранить</button>
     </form>
   </body>
 </html>
@@ -140,9 +198,13 @@ Genesys SDK <---> iframe UI <---> CIFramework <--> HTTP-запрос --> Flow/Pl
 
 * Ты можешь встроить UI полностью через Genesys, не требуя конфигурации от пользователя D365
 * Настройки можно безопасно хранить через CIFramework (`getSession`, `getEnvironment`) или `localStorage`
-* Смена статуса в Dynamics требует backend-интеграции (Flow или Plugin)
+* Смена статуса в Dynamics требует backend-интеграции (Flow или Plugin) с использованием `CCaaS_ModifyAgentPresence`
+* Возможна работа с кастомными статусами
 * CIFramework v1 подходит под текущую архитектуру
 
 ---
 
-Если нужно, могу собрать тебе базовый `settings.html` + React шаблон + схемы вызова Flow для смены статуса.
+## 🔗 Полезные ссылки
+
+* [Управление статусами в Omnichannel](https://learn.microsoft.com/ru-ru/dynamics365/customer-service/use/oc-manage-presence-status)
+* [Расширение статусов присутствия](https://learn.microsoft.com/ru-ru/dynamics365/contact-center/extend/presence-status-sync)
