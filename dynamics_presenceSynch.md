@@ -105,16 +105,16 @@ Genesys SDK <---> iframe UI <---> CIFramework <--> HTTP-запрос --> Flow/Pl
 <html>
   <head><title>Genesys Settings</title></head>
   <body>
-    <h2>Настройки Genesys Интеграции</h2>
+    <h2>Genesys Integration Settings</h2>
     <form>
       <label>Регион: <input type="text" id="region" /></label><br />
       <label>Client ID: <input type="text" id="clientId" /></label><br />
-      <label>Сопоставление статусов:</label>
+      <label>Status Mapping:</label>
       <table>
         <tr><th>Genesys</th><th>Dynamics</th></tr>
         <tr><td><input value="Available" /></td><td><input value="Ready" /></td></tr>
       </table>
-      <button type="submit">Сохранить</button>
+      <button type="submit">Save</button>
     </form>
   </body>
 </html>
