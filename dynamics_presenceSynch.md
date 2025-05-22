@@ -50,10 +50,9 @@ Microsoft.CIFramework.getSession("genesys_settings").then((value) => {
 });
 ```
 
-### 🔹 Пример 3: использование `localStorage` в iframe
+### 🔹 Пример 2: использование `localStorage` в iframe
 
 ```ts
-// Внутри settings.html
 localStorage.setItem("genesys_settings", JSON.stringify({ region: "prod", clientId: "123" }));
 const settings = JSON.parse(localStorage.getItem("genesys_settings") || "{}");
 ```
@@ -70,23 +69,7 @@ const settings = JSON.parse(localStorage.getItem("genesys_settings") || "{}");
 
 ### 🧩 Как это реализовать:
 
-1. Получение статуса агента в Genesys (примерно):
-
-```ts
-const presenceApi = new platformClient.PresenceApi();
-const userId = '...';
-presenceApi.getUserPresence(userId, 'PURECLOUD').then((res) => console.log(res.presenceDefinition.systemPresence));
-```
-
-2. Изменение статуса в Genesys:
-
-```ts
-presenceApi.patchUserPresence(userId, 'PURECLOUD', {
-  presenceDefinition: { id: "desired-presence-id" }
-});
-```
-
-3. Чтобы статус отразился в Dynamics:
+#### Чтобы статус отразился в Dynamics:
 
    * **нельзя напрямую менять статус Omni-Channel агента** через JS или API
    * нужно использовать **Power Automate Flow**, который по webhook может вызывать внутреннюю команду
