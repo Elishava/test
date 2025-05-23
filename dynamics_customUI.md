@@ -44,9 +44,6 @@ Microsoft.CIFramework.setSession("genesys_config", JSON.stringify({
 }));
 ```
 
-**🖼 Иллюстрация:**
-![Web Resource в форме](https://learn.microsoft.com/en-us/power-apps/maker/model-driven-apps/media/add-webresource/webresource-control.png)
-
 **Пример HTML-файла:**
 
 ```html
