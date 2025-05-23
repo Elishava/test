@@ -33,6 +33,10 @@
 ```
 ---
 
+![image](https://github.com/user-attachments/assets/3ae9ee59-b1fa-4509-a2e8-9046ec955e1e)
+
+---
+
 ### ✅ 1.2. Power Apps Custom Page
 
 **Описание:**
@@ -52,6 +56,9 @@
 
 ![image](https://github.com/user-attachments/assets/c0787776-fd8a-495c-986b-b0737642109f)
 
+---
+
+![image](https://github.com/user-attachments/assets/a9ad7a30-067c-4780-a630-c9944ca31fe4)
 
 ---
 
@@ -72,8 +79,14 @@
 * Требует разработки и упаковки через CLI
 * Требует knowledge в Webpack, CDS SDK
 
-**🖼 Иллюстрация:**
-![PCF Control](https://learn.microsoft.com/en-us/power-apps/developer/component-framework/media/overview/pcf-component-inline-editing.png)
+---
+
+![image](https://github.com/user-attachments/assets/3383127a-9561-4709-b9bd-4cdc7be17310)
+
+---
+
+![image](https://github.com/user-attachments/assets/96799da3-2de4-45b1-91da-c6589a3a1b10)
+
 
 ---
 
