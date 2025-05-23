@@ -21,6 +21,14 @@
 * Настройки интеграции
 * Визуализация данных
 
+**Где подключается iframe Web Resource:**
+
+* Открой форму нужной сущности в **Form Designer**
+* Нажми **Insert → Web Resource**
+* Выбери загруженный HTML-файл (например `settings.html`)
+* Установи флаг "Display as iframe" и задай размеры (width/height)
+* Укажи имя и описание компонента
+
 **Добавление на форму:**
 
 1. Создайте Web Resource (`settings.html`, `settings.js`, `bundle.js`)
@@ -201,6 +209,26 @@ localStorage.setItem("genesys_settings", JSON.stringify({ region: "prod-euw1", c
 
 ---
 
+## 📦 Структура возможной конфигурации (JSON)
+
+```json
+{
+  "region": "prod-euw1",
+  "clientId": "xyz-123",
+  "statusMapping": {
+    "Available": "Ready",
+    "Away": "Break",
+    "Busy": "Not Ready"
+  },
+  "features": {
+    "logging": true,
+    "debug": false
+  }
+}
+```
+
+---
+
 ## ✅ Резюме
 
 | Способ               | Подходит для                                | Комментарий                                |
@@ -213,5 +241,3 @@ localStorage.setItem("genesys_settings", JSON.stringify({ region: "prod-euw1", c
 | localStorage         | Быстро и локально                           | Только если iframe внешний                 |
 
 ---
-
-Если нужно — могу собрать пример UI на React как Web Resource + конфигурация через custom entity.
