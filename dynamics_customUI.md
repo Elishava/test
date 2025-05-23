@@ -50,8 +50,8 @@
 * Для построения административных интерфейсов
 * Таблицы, формы, визуальные редакторы
 
-**🖼 Иллюстрация:**
-![Custom Page](https://learn.microsoft.com/en-us/power-apps/maker/model-driven-apps/media/custom-pages/model-driven-custom-page.png)
+![image](https://github.com/user-attachments/assets/c0787776-fd8a-495c-986b-b0737642109f)
+
 
 ---
 
