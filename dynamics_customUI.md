@@ -31,6 +31,50 @@
 ```html
 <iframe src="/WebResources/your_custom_ui.html" width="100%" height="400px" frameborder="0"></iframe>
 ```
+
+**🧱 Как взаимодействовать с системой:**
+
+```ts
+Microsoft.CIFramework.getEnvironment().then((env) => {
+  console.log("Region:", env["region"]);
+});
+
+Microsoft.CIFramework.setSession("genesys_config", JSON.stringify({
+  region: "prod", clientId: "abc"
+}));
+```
+
+**🖼 Иллюстрация:**
+![Web Resource в форме](https://learn.microsoft.com/en-us/power-apps/maker/model-driven-apps/media/add-webresource/webresource-control.png)
+
+**Пример HTML-файла:**
+
+```html
+<html>
+  <body>
+    <h2>Genesys Settings</h2>
+    <label>Region: <input id="region" /></label><br />
+    <label>Client ID: <input id="clientId" /></label><br />
+    <button onclick="save()">Save</button>
+  </body>
+  <script>
+    function save() {
+      const config = {
+        region: document.getElementById('region').value,
+        clientId: document.getElementById('clientId').value
+      };
+      localStorage.setItem("genesys_settings", JSON.stringify(config));
+    }
+  </script>
+</html>
+```
+
+**Когда использовать:**
+
+* Нужен React или кастомный HTML-интерфейс
+* Нужна интеграция с внешними API
+* Не используется Power FX
+
 ---
 
 ![image](https://github.com/user-attachments/assets/3ae9ee59-b1fa-4509-a2e8-9046ec955e1e)
