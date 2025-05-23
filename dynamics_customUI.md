@@ -31,10 +31,6 @@
 ```html
 <iframe src="/WebResources/your_custom_ui.html" width="100%" height="400px" frameborder="0"></iframe>
 ```
-
-**🖼 Иллюстрация:**
-![Web Resource в форме](https://learn.microsoft.com/en-us/power-apps/maker/model-driven-apps/media/add-webresource/webresource-control.png)
-
 ---
 
 ### ✅ 1.2. Power Apps Custom Page
